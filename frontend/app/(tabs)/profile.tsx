@@ -1,22 +1,34 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { mockStorage } from '../../utils/storage/mockStorage';
 
-// Mock user data
-const MOCK_USER = {
+// Default user data if no user is found
+const DEFAULT_USER = {
   id: 'user1',
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  phone: '+1 (555) 123-4567',
-  location: 'San Francisco, CA',
-  joinDate: '2025-06-01'
+  displayName: 'Ramesh',
+  name: 'Ramesh',
+  email: 'guest@example.com',
+  phone: '1234567890',
+
 };
 
 export default function Profile() {
-  const [user, setUser] = useState(MOCK_USER);
+  // Get user from mockStorage or use default
+  const storedUser: any = mockStorage.getUser();
+  const initialUser = storedUser ? {
+    ...DEFAULT_USER,
+    id: storedUser.id || 'user1',
+    name: storedUser.displayName || 'Guest User',
+    displayName: storedUser.displayName || 'Guest User',
+    email: storedUser.email || 'guest@example.com',
+    phone: storedUser.phoneNumber || '+1 (555) 123-4567'
+  } : DEFAULT_USER;
+  
+  const [user, setUser] = useState(initialUser);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState({ ...MOCK_USER });
+  const [editedUser, setEditedUser] = useState({ ...initialUser });
   const router = useRouter();
 
   const handleSave = () => {
@@ -39,13 +51,25 @@ export default function Profile() {
       'Are you sure you want to logout?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', onPress: () => router.replace('/login') }
+        { 
+          text: 'Logout', 
+          onPress: () => {
+            // Clear the auth state
+            mockStorage.logout();
+            // Navigate to login screen
+            router.replace('/login');
+          } 
+        }
       ]
     );
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
@@ -98,13 +122,6 @@ export default function Profile() {
               keyboardType="phone-pad"
               placeholder="Enter your phone number"
             />
-            <Text style={styles.label}>Location</Text>
-            <TextInput
-              style={styles.input}
-              value={editedUser.location}
-              onChangeText={(text) => setEditedUser({ ...editedUser, location: text })}
-              placeholder="Enter your location"
-            />
             <View style={styles.formActions}>
               <TouchableOpacity
                 style={[styles.actionButton, styles.cancelButton]}
@@ -139,13 +156,7 @@ export default function Profile() {
                   <Text style={styles.detailValue}>{user.phone}</Text>
                 </View>
               </View>
-              <View style={styles.detailRow}>
-                <Ionicons name="location" size={20} color="#2E7D32" style={styles.detailIcon} />
-                <View>
-                  <Text style={styles.detailLabel}>Location</Text>
-                  <Text style={styles.detailValue}>{user.location}</Text>
-                </View>
-              </View>
+
             </View>
 
             {/* My Activity Card */}

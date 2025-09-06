@@ -1,19 +1,37 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Alert, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { getProductImage } from '../../utils/images/productImages';
+import { mockStorage } from '../../utils/storage/mockStorage';
+import { useFocusEffect } from '@react-navigation/native';
 
-// Mock data for user's listings - would come from API in a real app
-type Listing = {
+// Constants
+const SORT_OPTIONS = ['Price: low', 'Price: high', 'Name'];
+const FILTER_OPTIONS = ['Active', 'Sold', 'Clothing', 'Electronics', 'Furniture'];
+const GROUP_OPTIONS = ['Category', 'Status'];
+
+/**
+ * Represents a product listing in the marketplace
+ */
+interface Listing {
+  /** Unique identifier for the listing */
   id: string;
+  /** Title/name of the product */
   title: string;
+  /** Detailed description of the product */
   description: string;
+  /** Price of the product in currency units */
   price: number;
+  /** Category classification (e.g., Clothing, Electronics) */
   category: string;
-  imageUrl: string | null;
+  /** URL to the product image */
+  imageUrl: { uri: string } | null;
+  /** ID of the user who owns this listing */
   userId: string;
+  /** Current status of the listing (e.g., active, sold) */
   status: string;
-};
+}
 
 const MOCK_MY_LISTINGS: Listing[] = [
   {
@@ -22,7 +40,7 @@ const MOCK_MY_LISTINGS: Listing[] = [
     description: 'Authentic vintage leather jacket in excellent condition. Size M.',
     price: 75.00,
     category: 'Clothing',
-    imageUrl: null, // We'll use a placeholder
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' },
     userId: 'user1',
     status: 'active'
   },
@@ -32,7 +50,7 @@ const MOCK_MY_LISTINGS: Listing[] = [
     description: 'Authentic mid-century modern chair in teak. Some patina but structurally sound.',
     price: 120.00,
     category: 'Furniture',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1611486212557-88be5ff6f941?auto=format&fit=crop&w=500&h=500&q=80' },
     userId: 'user1',
     status: 'active'
   },
@@ -42,14 +60,14 @@ const MOCK_MY_LISTINGS: Listing[] = [
     description: 'Vintage Polaroid camera from the 1980s. Still works perfectly.',
     price: 40.00,
     category: 'Electronics',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1495121553079-4c61bcce1894?auto=format&fit=crop&w=500&h=500&q=80' },
     userId: 'user1',
     status: 'sold'
   }
 ];
 
 export default function MyListings() {
-<<<<<<< Updated upstream
+  // Initialize with mock data and then add any new products from mockStorage
   const [listings, setListings] = useState(MOCK_MY_LISTINGS);
   const [search, setSearch] = useState('');
   const [sortOpen, setSortOpen] = useState(false);
@@ -58,12 +76,54 @@ export default function MyListings() {
   const [selectedSort, setSelectedSort] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
-=======
-  const [listings, setListings] = useState<Listing[]>(MOCK_MY_LISTINGS);
->>>>>>> Stashed changes
-  const router = useRouter();
 
-  const handleDelete = (id: string) => {
+  const router = useRouter();
+  
+  /**
+   * Loads product listings from both mock data and storage
+   * Combines listings while avoiding duplicates based on ID
+   */
+  const loadListings = useCallback(() => {
+    // Get stored listings from mock storage
+    const storedListings = mockStorage.getProductListings() || [];
+    
+    // Create a Set of mock listing IDs for efficient lookup
+    const mockListingIds = new Set(MOCK_MY_LISTINGS.map(item => item.id));
+    
+    // Cast storedListings to the right type and filter out duplicates
+    const typedStoredListings = storedListings as Listing[];
+    const uniqueStoredListings = typedStoredListings.filter(item => !mockListingIds.has(item.id));
+    
+    // Combine mock data with unique stored listings and update state
+    setListings([...MOCK_MY_LISTINGS, ...uniqueStoredListings]);
+    
+    // Log for debugging purposes
+    console.log('Total listings loaded:', MOCK_MY_LISTINGS.length + uniqueStoredListings.length);
+  }, []);
+  
+  // Load listings from mockStorage when component mounts
+  useEffect(() => {
+    // Initial load of listings
+    loadListings();
+  }, [loadListings]);
+  
+  // Reload listings whenever the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      console.log('MyListings screen focused - reloading data');
+      loadListings();
+      
+      return () => {
+        // Cleanup if needed when screen loses focus
+      };
+    }, [loadListings])
+  );
+
+  /**
+   * Handles deletion of a product listing with confirmation
+   * @param id - ID of the listing to delete
+   */
+  const handleDelete = useCallback((id: string) => {
     Alert.alert(
       'Delete Listing',
       'Are you sure you want to delete this listing?',
@@ -75,57 +135,86 @@ export default function MyListings() {
         {
           text: 'Delete',
           onPress: () => {
-            // In a real app, this would make an API call to delete the listing
-            setListings(listings.filter(item => item.id !== id));
+            try {
+              // Delete from mockStorage and update local state
+              const deleted = mockStorage.deleteProductListing(id);
+              if (deleted) {
+                setListings(prevListings => prevListings.filter(item => item.id !== id));
+                console.log(`Successfully deleted listing with ID: ${id}`);
+              } else {
+                console.warn(`Failed to delete listing with ID: ${id}`);
+              }
+            } catch (error) {
+              console.error('Error deleting listing:', error);
+              Alert.alert('Error', 'Failed to delete the listing. Please try again.');
+            }
           },
           style: 'destructive'
         }
       ]
     );
-  };
+  }, []);
 
-<<<<<<< Updated upstream
-  // Filter listings based on search and filter options
-  const filteredListings = listings.filter((listing) => {
-    // Apply search filter
-    const matchesSearch = listing.title.toLowerCase().includes(search.toLowerCase()) || 
-                          listing.description.toLowerCase().includes(search.toLowerCase());
+  /**
+   * Filters listings based on search text and filter options
+   */
+  const filteredListings = useMemo(() => {
+    return listings.filter((listing) => {
+      // Apply search filter (case-insensitive)
+      const query = search.toLowerCase();
+      const matchesSearch = !query || 
+        listing.title.toLowerCase().includes(query) || 
+        listing.description.toLowerCase().includes(query);
+      
+      // Apply filter based on selected filter option
+      let matchesFilter = true;
+      
+      // Status filters
+      if (selectedFilter === 'Active') {
+        matchesFilter = listing.status === 'active';
+      } else if (selectedFilter === 'Sold') {
+        matchesFilter = listing.status === 'sold';
+      }
+      // Category filters
+      else if (selectedFilter === 'Clothing') {
+        matchesFilter = listing.category === 'Clothing';
+      } else if (selectedFilter === 'Electronics') {
+        matchesFilter = listing.category === 'Electronics';
+      } else if (selectedFilter === 'Furniture') {
+        matchesFilter = listing.category === 'Furniture';
+      }
+      
+      return matchesSearch && matchesFilter;
+    });
+  }, [listings, search, selectedFilter]);
+
+  /**
+   * Sorts the filtered listings based on selected sort option
+   */
+  const sortedListings = useMemo(() => {
+    const listingsCopy = [...filteredListings];
     
-    // Apply filter based on selected filter
-    let matchesFilter = true;
-    if (selectedFilter === 'Active') {
-      matchesFilter = listing.status === 'active';
-    } else if (selectedFilter === 'Sold') {
-      matchesFilter = listing.status === 'sold';
-    } else if (selectedFilter === 'Clothing') {
-      matchesFilter = listing.category === 'Clothing';
-    } else if (selectedFilter === 'Electronics') {
-      matchesFilter = listing.category === 'Electronics';
-    } else if (selectedFilter === 'Furniture') {
-      matchesFilter = listing.category === 'Furniture';
+    switch (selectedSort) {
+      case 'Price: low':
+        return listingsCopy.sort((a, b) => a.price - b.price);
+      case 'Price: high':
+        return listingsCopy.sort((a, b) => b.price - a.price);
+      case 'Name':
+        return listingsCopy.sort((a, b) => a.title.localeCompare(b.title));
+      default:
+        return listingsCopy;
     }
-    
-    return matchesSearch && matchesFilter;
-  });
+  }, [filteredListings, selectedSort]);
 
-  // Sort listings based on selected sort option
-  const sortedListings = [...filteredListings].sort((a, b) => {
-    if (selectedSort === 'Price: low') {
-      return a.price - b.price;
-    } else if (selectedSort === 'Price: high') {
-      return b.price - a.price;
-    } else if (selectedSort === 'Name') {
-      return a.title.localeCompare(b.title);
-    }
-    return 0; // Default: no sorting
-  });
-
-  // Group listings based on selected group option
-  const groupedListings = () => {
+  /**
+   * Groups listings based on selected grouping option
+   * @returns Record of grouped listings or null if no grouping is applied
+   */
+  const groupedListings = useMemo(() => {
     if (selectedGroup === 'Category') {
       // Group by category
-      const groups: Record<string, typeof listings> = {};
-      sortedListings.forEach(listing => {
+      const groups: Record<string, Listing[]> = {};
+      sortedListings.forEach((listing: Listing) => {
         if (!groups[listing.category]) {
           groups[listing.category] = [];
         }
@@ -134,12 +223,12 @@ export default function MyListings() {
       return groups;
     } else if (selectedGroup === 'Status') {
       // Group by status
-      const groups: Record<string, typeof listings> = {
+      const groups: Record<string, Listing[]> = {
         'Active': [],
         'Sold': []
       };
       
-      sortedListings.forEach(listing => {
+      sortedListings.forEach((listing: Listing) => {
         if (listing.status === 'active') {
           groups['Active'].push(listing);
         } else if (listing.status === 'sold') {
@@ -151,76 +240,97 @@ export default function MyListings() {
     
     // No grouping
     return null;
-  };
-  
-  const listingsToDisplay = selectedGroup ? null : sortedListings;
+  }, [sortedListings, selectedGroup]);
 
-  const renderListingItem = ({ item }: { item: typeof listings[0] }) => (
-=======
-  const renderListingItem = ({ item }: { item: Listing }) => (
->>>>>>> Stashed changes
-    <View style={styles.listingItem}>
-      <TouchableOpacity 
-        style={styles.listingContent}
-        onPress={() => router.push(`/product/${item.id}`)}
-        activeOpacity={0.85}
-      >
-        <View style={styles.imageContainer}>
-          <Image 
-            source={require('../../assets/images/splash-icon.png')}
-            style={styles.productImage}
-            resizeMode="cover"
-          />
-          {item.status === 'sold' && (
-            <View style={styles.soldOverlay}>
-              <Text style={styles.soldText}>SOLD</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
-          <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
-          <Text style={styles.itemCategory}>{item.category}</Text>
-        </View>
-      </TouchableOpacity>
-      <View style={styles.actionsContainer}>
+  /**
+   * Renders a single listing item
+   * @param props - Component props containing the item to render
+   * @returns JSX element for a listing item
+   */
+  /**
+   * Renders a single listing item
+   * @param props - Component props containing the item to render
+   * @returns JSX element for a listing item
+   */
+  const renderListingItem = ({ item }: { item: typeof listings[0] }) => {
+    return (
+      <View style={styles.listingItem}>
         <TouchableOpacity 
-<<<<<<< Updated upstream
-          style={[styles.actionButton, styles.editButton]}
+          style={styles.listingContent}
           onPress={() => router.push(`/product/${item.id}`)}
-=======
-          style={[styles.actionButton, styles.editButton, {backgroundColor: '#E8F5E9', borderTopLeftRadius: 8}]}
-          onPress={() => router.push(`/editProduct/${item.id}`)}
-          activeOpacity={0.8}
->>>>>>> Stashed changes
+          activeOpacity={0.85}
         >
-          <Ionicons name="create-outline" size={18} color="#2E7D32" />
-          <Text style={styles.editButtonText}>Edit</Text>
+          <View style={styles.imageContainer}>
+            <Image 
+              source={item.imageUrl || getProductImage(item.title, item.category)}
+              style={styles.productImage}
+              resizeMode="cover"
+            />
+            {item.status === 'sold' && (
+              <View style={styles.soldOverlay}>
+                <Text style={styles.soldText}>SOLD</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.itemInfo}>
+            <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
+            <Text style={styles.itemPrice}>₹{item.price.toFixed(2)}</Text>
+            <Text style={styles.itemCategory}>{item.category}</Text>
+          </View>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.deleteButton, {backgroundColor: '#FFEBEE', borderTopRightRadius: 8}]}
-          onPress={() => handleDelete(item.id)}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="trash-outline" size={18} color="#FF5722" />
-          <Text style={styles.deleteButtonText}>Delete</Text>
-        </TouchableOpacity>
+        <View style={styles.actionsContainer}>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.editButton]}
+            onPress={() => router.push(`/product/${item.id}`)}
+          >
+            <Ionicons name="create-outline" size={18} color="#2E7D32" />
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.deleteButton, {backgroundColor: '#FFEBEE', borderTopRightRadius: 8}]}
+            onPress={() => handleDelete(item.id)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="trash-outline" size={18} color="#FF5722" />
+            <Text style={styles.deleteButtonText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+    );
+  };
+
+  /**
+   * EmptyListingState component to show when no listings are available
+   */
+  const EmptyListingState = () => (
+    <View style={styles.emptyState}>
+      <Ionicons name="list" size={80} color="#BDBDBD" />
+      <Text style={styles.emptyStateTitle}>No Listings Yet</Text>
+      <Text style={styles.emptyStateDescription}>
+        You haven&apos;t created any product listings yet
+      </Text>
+      
+      <TouchableOpacity 
+        style={styles.createListingButton}
+        onPress={() => router.push('/addProduct')}
+      >
+        <Text style={styles.createListingButtonText}>Create Listing</Text>
+      </TouchableOpacity>
     </View>
   );
 
-  // Render content based on grouping
+  /**
+   * Renders content based on whether grouping is applied
+   * @returns JSX element with either grouped listings or a FlatList
+   */
   const renderContent = () => {
-    if (selectedGroup) {
-      const groups = groupedListings();
-      if (!groups) return null;
-      
+    if (selectedGroup && groupedListings) {
       return (
         <>
-          {Object.entries(groups).map(([groupName, groupListings]) => (
+          {Object.entries(groupedListings).map(([groupName, groupListings]: [string, Listing[]]) => (
             <View key={groupName}>
               <Text style={styles.groupHeader}>{groupName} ({groupListings.length})</Text>
-              {groupListings.map(listing => (
+              {groupListings.map((listing: Listing) => (
                 <View key={listing.id}>
                   {renderListingItem({ item: listing })}
                 </View>
@@ -238,22 +348,7 @@ export default function MyListings() {
         renderItem={renderListingItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listingsContainer}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Ionicons name="list" size={80} color="#BDBDBD" />
-            <Text style={styles.emptyStateTitle}>No Listings Yet</Text>
-            <Text style={styles.emptyStateDescription}>
-              You haven&apos;t created any product listings yet
-            </Text>
-            
-            <TouchableOpacity 
-              style={styles.createListingButton}
-              onPress={() => router.push('/addProduct')}
-            >
-              <Text style={styles.createListingButtonText}>Create Listing</Text>
-            </TouchableOpacity>
-          </View>
-        }
+        ListEmptyComponent={<EmptyListingState />}
       />
     );
   };
@@ -288,7 +383,7 @@ export default function MyListings() {
           label="Sort"
           open={sortOpen}
           setOpen={setSortOpen}
-          options={['Price: low', 'Price: high', 'Name']}
+          options={SORT_OPTIONS}
           selectedOption={selectedSort}
           onSelect={setSelectedSort}
         />
@@ -296,7 +391,7 @@ export default function MyListings() {
           label="Filter"
           open={filterOpen}
           setOpen={setFilterOpen}
-          options={['Active', 'Sold', 'Clothing', 'Electronics', 'Furniture']}
+          options={FILTER_OPTIONS}
           selectedOption={selectedFilter}
           onSelect={setSelectedFilter}
         />
@@ -304,7 +399,7 @@ export default function MyListings() {
           label="Group"
           open={groupOpen}
           setOpen={setGroupOpen}
-          options={['Category', 'Status']}
+          options={GROUP_OPTIONS}
           selectedOption={selectedGroup}
           onSelect={setSelectedGroup}
         />
@@ -336,6 +431,18 @@ export default function MyListings() {
 /* -------------------------------------------------------------------------- */
 /*                               Dropdown Component                               */
 /* -------------------------------------------------------------------------- */
+/**
+ * Dropdown component for selecting options from a list
+ * 
+ * @param props - Component properties
+ * @param props.label - Label to display for the dropdown
+ * @param props.open - Whether the dropdown is open
+ * @param props.setOpen - Function to set the open state
+ * @param props.options - Array of options to display
+ * @param props.selectedOption - Currently selected option
+ * @param props.onSelect - Function called when an option is selected
+ * @returns Dropdown component
+ */
 function Dropdown({
   label,
   open,
@@ -350,10 +457,22 @@ function Dropdown({
   options: string[];
   selectedOption: string;
   onSelect: (option: string) => void;
-}) {
+}): React.JSX.Element {
+  // Toggle dropdown open/closed
+  const toggleDropdown = useCallback(() => setOpen(!open), [open, setOpen]);
+  
+  // Handle option selection
+  const handleSelect = useCallback((option: string) => {
+    onSelect(option);
+    setOpen(false);
+  }, [onSelect, setOpen]);
+  
+  // Handle clear selection
+  const handleClear = useCallback(() => handleSelect(''), [handleSelect]);
+
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity style={styles.dropdownBtn} onPress={() => setOpen(!open)}>
+      <TouchableOpacity style={styles.dropdownBtn} onPress={toggleDropdown}>
         <Text style={styles.dropdownLbl}>
           {selectedOption ? `${label}: ${selectedOption}` : label}
         </Text>
@@ -364,26 +483,22 @@ function Dropdown({
           <TouchableOpacity 
             key="clear" 
             style={styles.dropdownItem}
-            onPress={() => {
-              onSelect('');
-              setOpen(false);
-            }}
+            onPress={handleClear}
           >
             <Text>Clear</Text>
           </TouchableOpacity>
-          {options.map((o) => (
+          {options.map((option) => (
             <TouchableOpacity 
-              key={o} 
+              key={option} 
               style={[
                 styles.dropdownItem,
-                selectedOption === o && styles.selectedDropdownItem
+                selectedOption === option && styles.selectedDropdownItem
               ]}
-              onPress={() => {
-                onSelect(o);
-                setOpen(false);
-              }}
+              onPress={() => handleSelect(option)}
             >
-              <Text style={selectedOption === o ? styles.selectedDropdownText : undefined}>{o}</Text>
+              <Text style={selectedOption === option ? styles.selectedDropdownText : undefined}>
+                {option}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>

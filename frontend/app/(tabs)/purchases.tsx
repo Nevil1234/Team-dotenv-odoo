@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { getProductImage } from '../../utils/images/productImages';
 
 // Mock data for previous purchases - would come from API in a real app
 const MOCK_PURCHASES = [
@@ -13,7 +14,7 @@ const MOCK_PURCHASES = [
       description: 'Used iPhone 12 Pro, 128GB, Pacific Blue. Minor scratches but works perfectly.',
       price: 550.00,
       category: 'Electronics',
-      imageUrl: null,
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8aXBob25lJTIwMTIlMjBwcm98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60' },
       userId: 'user2'
     },
     seller: {
@@ -32,7 +33,7 @@ const MOCK_PURCHASES = [
       description: 'Complete Harry Potter book series. Hardcover edition with minimal wear.',
       price: 65.00,
       category: 'Books',
-      imageUrl: null,
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1598153346810-860daa814c4b?auto=format&fit=crop&w=500&h=500&q=80' },
       userId: 'user2'
     },
     seller: {
@@ -141,7 +142,7 @@ export default function Purchases() {
     >
       <View style={styles.imageContainer}>
         <Image 
-          source={require('../../assets/images/splash-icon.png')}
+          source={item.product.imageUrl || getProductImage(item.product.title, item.product.category)}
           style={styles.productImage}
           resizeMode="cover"
         />
@@ -153,7 +154,7 @@ export default function Purchases() {
           <Text style={styles.itemCategory}>{item.product.category}</Text>
         </View>
         
-        <Text style={styles.itemPrice}>${item.product.price.toFixed(2)}</Text>
+        <Text style={styles.itemPrice}>₹{item.product.price.toFixed(2)}</Text>
         
         <View style={styles.sellerRow}>
           <Ionicons name="person-outline" size={14} color="#757575" style={styles.icon} />

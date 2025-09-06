@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { getProductImage } from '../../utils/images/productImages';
 
 // Define the Order type
 type Seller = {
@@ -27,7 +28,7 @@ type Product = {
   description: string;
   price: number;
   category: string;
-  imageUrl: string | null;
+  imageUrl: { uri: string } | null;
   userId: string;
 };
 
@@ -63,7 +64,7 @@ const MOCK_ORDERS: Record<string, Order> = {
       description: 'Used iPhone 12 Pro, 128GB, Pacific Blue. Minor scratches but works perfectly.',
       price: 550.00,
       category: 'Electronics',
-      imageUrl: null,
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8aXBob25lJTIwMTIlMjBwcm98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60' },
       userId: 'user2'
     },
     seller: {
@@ -96,7 +97,7 @@ const MOCK_ORDERS: Record<string, Order> = {
       description: 'Complete Harry Potter book series. Hardcover edition with minimal wear.',
       price: 65.00,
       category: 'Books',
-      imageUrl: null,
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1626618012641-bfbca5a31239?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aGFycnklMjBwb3R0ZXIlMjBib29rc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' },
       userId: 'user2'
     },
     seller: {
@@ -228,7 +229,7 @@ export default function OrderSummary() {
               <div class="section-title">Item Purchased</div>
               <div class="item">
                 <div>${product.title} (${product.category}) x ${quantity}</div>
-                <div>$${product.price.toFixed(2)}/each</div>
+                <div>₹${product.price.toFixed(2)}/each</div>
               </div>
               <div style="margin-top: 10px;">
                 <div style="font-size: 11px; font-weight: bold; color: #2E7D32; margin-bottom: 4px;">SELLER</div>
@@ -240,7 +241,7 @@ export default function OrderSummary() {
               <div class="section-title">Order Summary</div>
               <div class="item">
                 <div>Item(s) Subtotal:</div>
-                <div>$${(product.price * quantity).toFixed(2)}</div>
+                <div>₹${(product.price * quantity).toFixed(2)}</div>
               </div>
               <div class="item">
                 <div>Shipping:</div>
@@ -248,7 +249,7 @@ export default function OrderSummary() {
               </div>
               <div class="item total">
                 <div>Total:</div>
-                <div>$${totalAmount.toFixed(2)}</div>
+                <div>₹${totalAmount.toFixed(2)}</div>
               </div>
             </div>
             
@@ -354,14 +355,14 @@ export default function OrderSummary() {
           <Text style={styles.sectionTitle}>Item Purchased</Text>
           <View style={styles.productContainer}>
             <Image
-              source={require('../../assets/images/splash-icon.png')}
+              source={order.product.imageUrl || getProductImage(order.product.title, order.product.category)}
               style={styles.productImage}
               resizeMode="cover"
             />
             <View style={styles.productDetails}>
               <Text style={styles.productTitle}>{product.title}</Text>
               <Text style={styles.productCategory}>{product.category}</Text>
-              <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+              <Text style={styles.productPrice}>₹{product.price.toFixed(2)}</Text>
               <Text style={styles.productQuantity}>Qty: {quantity}</Text>
               
               {/* Seller Info within Product Card */}
@@ -390,7 +391,7 @@ export default function OrderSummary() {
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Item Price</Text>
-            <Text style={styles.summaryValue}>${product.price.toFixed(2)} x {quantity}</Text>
+            <Text style={styles.summaryValue}>₹{product.price.toFixed(2)} x {quantity}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Shipping</Text>
@@ -399,7 +400,7 @@ export default function OrderSummary() {
           <View style={styles.divider} />
           <View style={styles.summaryItem}>
             <Text style={styles.totalLabel}>Total Amount</Text>
-            <Text style={styles.totalValue}>${totalAmount.toFixed(2)}</Text>
+            <Text style={styles.totalValue}>₹{totalAmount.toFixed(2)}</Text>
           </View>
         </View>
 

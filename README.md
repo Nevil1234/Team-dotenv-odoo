@@ -24,7 +24,7 @@ EcoFinds is revolutionizing sustainable consumption through a trusted second-han
 
 # 🚀 Quick Start
 
-### Prerequisites
+## Prerequisites
 
 - Node.js 18.0+
 - Expo CLI
@@ -55,9 +55,9 @@ npm install
 
 ## 4. Set up environment variables
 
-# Backend (.env)
+### Backend (.env)
 
-# (Create a .env file in the backend folder with the following content)
+#### (Create a .env file in the backend folder with the following content)
 ```bash
 
 DATABASE_URL=your_postgresql_connection_string
@@ -65,8 +65,8 @@ JWT_SECRET=your_jwt_secret
 PORT=3001
 ```
 
-# Frontend (app.config.js)
-# (Edit app.config.js in the frontend folder as follows)
+### Frontend (app.config.js)
+#### (Edit app.config.js in the frontend folder as follows)
 ```bash
 
 export default {
@@ -87,14 +87,14 @@ npx sequelize-cli db:migrate
 
 ## 6. Start development servers
 
-# Backend
+### Backend
 ```bash
 
 cd backend
 npm run dev
 ```
 
-## Frontend
+### Frontend
 ```bash
 
 cd frontend

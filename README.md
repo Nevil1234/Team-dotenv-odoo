@@ -33,7 +33,7 @@ Our platform extends product lifecycles, reduces waste, and makes sustainable sh
 
 ## Installation
 
-### 1. Clone the repository
+###1. Clone the repository
 
 ```bash
 git clone https://github.com/yourusername/ecofinds.git

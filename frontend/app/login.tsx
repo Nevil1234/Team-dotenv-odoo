@@ -9,11 +9,11 @@ export default function Login() {
   const router = useRouter();
 
   const handleLogin = () => {
-    // TODO: Implement actual authentication
-    console.log('Login with:', email, password);
+    // Dev mode: Skip authentication and go directly to home
+    console.log('Dev mode login with:', email, password);
     
-    // For now, just navigate to the main screen
-    router.replace('/');
+    // Navigate to the main tabs screen (home page)
+    router.replace('/(tabs)');
   };
 
   return (
@@ -58,7 +58,7 @@ export default function Login() {
         </TouchableOpacity>
 
         <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Don't have an account? </Text>
+          <Text style={styles.signupText}>Don&apos;t have an account? </Text>
           <Link href="/register" asChild>
             <TouchableOpacity>
               <Text style={styles.signupLink}>Sign Up</Text>

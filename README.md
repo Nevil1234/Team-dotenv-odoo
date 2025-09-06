@@ -10,7 +10,7 @@ EcoFinds is revolutionizing sustainable consumption through a trusted second-han
 
 ---
 
-## ✨ Features
+# ✨ Features
 
 - 🔐 **Secure Authentication** – Email/password registration and login
 - 🛍️ **Product Listings** – Create, read, update, and delete listings with images
@@ -22,7 +22,7 @@ EcoFinds is revolutionizing sustainable consumption through a trusted second-han
 
 ---
 
-## 🚀 Quick Start
+# 🚀 Quick Start
 
 ### Prerequisites
 
@@ -31,7 +31,7 @@ EcoFinds is revolutionizing sustainable consumption through a trusted second-han
 - PostgreSQL database
 - Railway account (for deployment)
 
-## Installation
+# Installation
 
 ## 1. Clone the repository
 
@@ -101,7 +101,7 @@ cd frontend
 npm start
 ```
 
-## 🏗️ Architecture
+# 🏗️ Architecture
 
 Here’s an overview of the project architecture:
 
@@ -109,7 +109,7 @@ Here’s an overview of the project architecture:
 
 ---
 
-#### 🎨 UI Components
+# 🎨 UI Components
 
 EcoFinds features a clean, modern interface with sustainability at its core:
 
@@ -120,11 +120,11 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 
 ---
 
-## 🗂️ Database Schema
+# 🗂️ Database Schema
 
 ![Database Schema](https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_86d6b8.png)
 
-## 🔌 API Endpoints
+# 🔌 API Endpoints
 
 | Method | Endpoint               | Description         |
 |--------|-----------------------|-------------------|
@@ -143,7 +143,7 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 
 ---
 
-## 🚀 Deployment
+# 🚀 Deployment
 
 ### Backend (Railway)
 
@@ -157,7 +157,7 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 cd frontend
 expo build:web
 ```
-## 📝 License
+# 📝 License
 
 This project is licensed under the MIT License.  
 https://opensource.org/licenses/MIT

@@ -31,74 +31,31 @@ EcoFinds is revolutionizing sustainable consumption through a trusted second-han
 - PostgreSQL database
 - Railway account (for deployment)
 
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/yourusername/ecofinds.git
-   cd ecofinds
 
 
-Install backend dependencies
-bashcd backend
-npm install
+## 🏗️ Architecture
 
-
-Install frontend dependencies
-bashcd ../frontend
-npm install
-
-
-Set up environment variables
-Backend (.env)
-Create a .env file in the backend folder with the following content:
-envDATABASE_URL=your_postgresql_connection_string
-JWT_SECRET=your_jwt_secret
-PORT=3001
-Frontend (app.config.js)
-Edit app.config.js in the frontend folder as follows:
-javascriptexport default {
-  expo: {
-    extra: {
-      apiUrl: process.env.API_URL || "http://localhost:3001",
-    },
-  },
-};
-
-
-Initialize database
-bashcd backend
-npx sequelize-cli db:migrate
-
-
-Start development servers
-Backend
-bashcd backend
-npm run dev
-Frontend
-bashcd frontend
-npm start
-
-
-
-🏗️ Architecture
 Here’s an overview of the project architecture:
-<img src="https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_d8f80d.png" alt="Architecture Diagram">
 
-🎨 UI Components
+![Architecture Diagram](https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_d8f80d.png)
+
+---
+
+## 🎨 UI Components
+
 EcoFinds features a clean, modern interface with sustainability at its core:
 
-Color Palette: Earth tones (greens, browns, tans)
-Typography: Rounded, friendly fonts
-Icons: Custom eco-friendly icon set
-Layout: Card-based design for products
+- **Color Palette:** Earth tones (greens, browns, tans)  
+- **Typography:** Rounded, friendly fonts  
+- **Icons:** Custom eco-friendly icon set  
+- **Layout:** Card-based design for products  
 
+---
 
-🗂️ Database Schema
-<img src="https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_86d6b8.png" alt="Database Schema">
+## 🗂️ Database Schema
 
-🔌 API Endpoints
+![Database Schema](https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_86d6b8.png)
+
 
 
 

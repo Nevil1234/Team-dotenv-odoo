@@ -157,6 +157,27 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 cd frontend
 expo build:web
 ```
+# Team Members:
+
+| S.No. | Name | Role | GitHub Username:octocat: |
+| --------------- | --------------- | --------------- | --------------- |
+| 1. | Nevil sequeira | Frontend Development | [@Nevil1234](https://github.com/Nevil1234) |
+| 2. | Harsh Jingar  | Frontend Development | [@Harsh-Jingar-19](https://github.com/Harsh-Jingar-19) |
+| 3. | Raj Patel | Backend Development | [@Raj-49](https://github.com/Raj-49)  |
+| 4. | Shukla Shrey | Backend Development  | [@shrey3108](https://github.com/shrey3108)  |
+
+## Maintainers✨
+
+<table>
+  <tbody><tr>
+        <td align="center"><a href="https://github.com/Nevil1234"><img alt="" src="https://avatars.githubusercontent.com/Nevil1234" width="100px;"><br><sub><b>Nevil Sequeira </b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
+
+    <td align="center"><a href="https://github.com/Harsh-Jingar-19"><img alt="" src="https://avatars.githubusercontent.com/Harsh-Jingar-19" width="100px;"><br><sub><b>Harsh Jingar </b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Raj-49"><img alt="" src="https://avatars.githubusercontent.com/Raj-49" width="100px;"><br><sub><b>raj patel</b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
+        <td align="center"><a href="https://github.com/shrey3108"><img alt="" src="https://avatars.githubusercontent.com/shrey3108" width="100px;"><br><sub><b>Shrey Shukla</b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
+
+ 
+</tbody></table>
 # 📝 License
 
 This project is licensed under the MIT License.  

@@ -166,18 +166,41 @@ expo build:web
 | 3. | Raj Patel | Backend Development | [@Raj-49](https://github.com/Raj-49)  |
 | 4. | Shukla Shrey | Backend Development  | [@shrey3108](https://github.com/shrey3108)  |
 
-## Maintainers✨
+# Maintainers ✨
 
 <table>
-  <tbody><tr>
-        <td align="center"><a href="https://github.com/Nevil1234"><img alt="" src="https://avatars.githubusercontent.com/Nevil1234" width="100px;"><br><sub><b>Nevil Sequeira </b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Nevil1234">
+        <img src="https://avatars.githubusercontent.com/Nevil1234" width="100px;"><br>
+        <sub><b>Nevil Sequeira</b></sub>
+      </a><br>
+      <a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Harsh-Jingar-19">
+        <img src="https://avatars.githubusercontent.com/Harsh-Jingar-19" width="100px;"><br>
+        <sub><b>Harsh Jingar</b></sub>
+      </a><br>
+      <a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Raj-49">
+        <img src="https://avatars.githubusercontent.com/Raj-49" width="100px;"><br>
+        <sub><b>Raj Patel</b></sub>
+      </a><br>
+      <a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/shrey3108">
+        <img src="https://avatars.githubusercontent.com/shrey3108" width="100px;"><br>
+        <sub><b>Shrey Shukla</b></sub>
+      </a><br>
+      <a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a>
+    </td>
+  </tr>
+</table>
 
-    <td align="center"><a href="https://github.com/Harsh-Jingar-19"><img alt="" src="https://avatars.githubusercontent.com/Harsh-Jingar-19" width="100px;"><br><sub><b>Harsh Jingar </b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/Raj-49"><img alt="" src="https://avatars.githubusercontent.com/Raj-49" width="100px;"><br><sub><b>raj patel</b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
-        <td align="center"><a href="https://github.com/shrey3108"><img alt="" src="https://avatars.githubusercontent.com/shrey3108" width="100px;"><br><sub><b>Shrey Shukla</b></sub></a><br><a href="https://github.com/Nevil1234/Team-dotenv-odoo" title="Code">💻</a></td>
-
- 
-</tbody></table>
 # 📝 License
 
 This project is licensed under the MIT License.  

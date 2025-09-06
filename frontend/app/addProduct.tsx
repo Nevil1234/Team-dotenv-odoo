@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image, Modal, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -55,11 +56,23 @@ export default function AddProduct() {
     ]);
   };
 
-  const handleAddImage = () => {
-    // In a real app, this would open the image picker
-    // For now, we'll just set a placeholder
-    setImageUri('placeholder');
-    Alert.alert('Image Added', 'Image placeholder added successfully');
+  const handleAddImage = async () => {
+    // Ask for permission
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Permission to access media library is required!');
+      return;
+    }
+    // Open image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImageUri(result.assets[0].uri);
+    }
   };
 
   return (
@@ -159,11 +172,11 @@ export default function AddProduct() {
           {imageUri ? (
             <View style={styles.imagePreviewContainer}>
               <Image
-                source={require('../assets/images/splash-icon.png')}
-                style={styles.imagePreview}
-                resizeMode="contain"
+                source={{ uri: imageUri }}
+                style={{ width: '100%', height: 170, borderRadius: 10, backgroundColor: '#eee' }}
+                resizeMode="cover"
               />
-              <Text style={styles.imageAddedText}>Image Added (Placeholder)</Text>
+              <Text style={styles.imageAddedText}>Image Selected</Text>
             </View>
           ) : (
             <View style={styles.imagePlaceholder}>
@@ -188,29 +201,41 @@ export default function AddProduct() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F9FA',
   },
   content: {
-    padding: 16,
+    margin: 16,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
     paddingBottom: 40,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 24,
+    marginBottom: 28,
+    color: '#1A1A1A',
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
   label: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     marginBottom: 8,
-    color: '#424242',
+    color: '#222',
+    marginLeft: 2,
   },
   input: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 10,
+    padding: 14,
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: 18,
     borderWidth: 1,
     borderColor: '#E0E0E0',
   },
@@ -220,12 +245,12 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    marginBottom: 16,
+    marginBottom: 18,
     height: 50,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -244,19 +269,20 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: 'white',
     width: '100%',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 12,
+    padding: 18,
     maxHeight: '80%',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 18,
     textAlign: 'center',
+    color: '#1A1A1A',
   },
   categoryItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 13,
+    paddingHorizontal: 18,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
     flexDirection: 'row',
@@ -268,16 +294,18 @@ const styles = StyleSheet.create({
   },
   selectedCategoryText: {
     color: '#2E7D32',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   imageUploadContainer: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E0E0E0',
     height: 200,
-    marginBottom: 24,
+    marginBottom: 26,
     overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   imagePlaceholder: {
     flex: 1,
@@ -297,22 +325,31 @@ const styles = StyleSheet.create({
   imagePreview: {
     width: '100%',
     height: '80%',
+    borderRadius: 10,
   },
   imageAddedText: {
     marginTop: 8,
     color: '#2E7D32',
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '600',
   },
   submitButton: {
     backgroundColor: '#2E7D32',
     height: 56,
-    borderRadius: 8,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 2,
   },
   submitButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
 });

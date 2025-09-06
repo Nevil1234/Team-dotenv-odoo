@@ -4,7 +4,18 @@ import React, { useState } from 'react';
 import { Alert, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 // Mock data for user's listings - would come from API in a real app
-const MOCK_MY_LISTINGS = [
+type Listing = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  imageUrl: string | null;
+  userId: string;
+  status: string;
+};
+
+const MOCK_MY_LISTINGS: Listing[] = [
   {
     id: '1',
     title: 'Vintage Leather Jacket',
@@ -38,6 +49,7 @@ const MOCK_MY_LISTINGS = [
 ];
 
 export default function MyListings() {
+<<<<<<< Updated upstream
   const [listings, setListings] = useState(MOCK_MY_LISTINGS);
   const [search, setSearch] = useState('');
   const [sortOpen, setSortOpen] = useState(false);
@@ -46,6 +58,9 @@ export default function MyListings() {
   const [selectedSort, setSelectedSort] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
+=======
+  const [listings, setListings] = useState<Listing[]>(MOCK_MY_LISTINGS);
+>>>>>>> Stashed changes
   const router = useRouter();
 
   const handleDelete = (id: string) => {
@@ -69,6 +84,7 @@ export default function MyListings() {
     );
   };
 
+<<<<<<< Updated upstream
   // Filter listings based on search and filter options
   const filteredListings = listings.filter((listing) => {
     // Apply search filter
@@ -140,10 +156,14 @@ export default function MyListings() {
   const listingsToDisplay = selectedGroup ? null : sortedListings;
 
   const renderListingItem = ({ item }: { item: typeof listings[0] }) => (
+=======
+  const renderListingItem = ({ item }: { item: Listing }) => (
+>>>>>>> Stashed changes
     <View style={styles.listingItem}>
       <TouchableOpacity 
         style={styles.listingContent}
         onPress={() => router.push(`/product/${item.id}`)}
+        activeOpacity={0.85}
       >
         <View style={styles.imageContainer}>
           <Image 
@@ -157,26 +177,30 @@ export default function MyListings() {
             </View>
           )}
         </View>
-        
         <View style={styles.itemInfo}>
           <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
           <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
           <Text style={styles.itemCategory}>{item.category}</Text>
         </View>
       </TouchableOpacity>
-      
       <View style={styles.actionsContainer}>
         <TouchableOpacity 
+<<<<<<< Updated upstream
           style={[styles.actionButton, styles.editButton]}
           onPress={() => router.push(`/product/${item.id}`)}
+=======
+          style={[styles.actionButton, styles.editButton, {backgroundColor: '#E8F5E9', borderTopLeftRadius: 8}]}
+          onPress={() => router.push(`/editProduct/${item.id}`)}
+          activeOpacity={0.8}
+>>>>>>> Stashed changes
         >
           <Ionicons name="create-outline" size={18} color="#2E7D32" />
           <Text style={styles.editButtonText}>Edit</Text>
         </TouchableOpacity>
-        
         <TouchableOpacity 
-          style={[styles.actionButton, styles.deleteButton]}
+          style={[styles.actionButton, styles.deleteButton, {backgroundColor: '#FFEBEE', borderTopRightRadius: 8}]}
           onPress={() => handleDelete(item.id)}
+          activeOpacity={0.8}
         >
           <Ionicons name="trash-outline" size={18} color="#FF5722" />
           <Text style={styles.deleteButtonText}>Delete</Text>
@@ -371,26 +395,34 @@ function Dropdown({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
+    backgroundColor: '#F8F9FA',
+    padding: 12,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+    paddingHorizontal: 4,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#1A1A1A',
+    letterSpacing: 0.5,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#2E7D32',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   addButtonText: {
     color: 'white',
@@ -475,31 +507,41 @@ const styles = StyleSheet.create({
   },
   listingsContainer: {
     paddingBottom: 20,
+    paddingHorizontal: 2,
   },
   listingItem: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    marginBottom: 16,
+    borderRadius: 12,
+    marginBottom: 18,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#EEEEEE',
+    borderColor: '#E0E0E0',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   listingContent: {
     flexDirection: 'row',
-    padding: 12,
+    padding: 14,
+    alignItems: 'center',
   },
   imageContainer: {
     width: 80,
     height: 80,
-    borderRadius: 8,
+    borderRadius: 10,
     backgroundColor: '#F5F5F5',
-    marginRight: 16,
+    marginRight: 18,
     overflow: 'hidden',
     position: 'relative',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   productImage: {
     width: '100%',
     height: '100%',
+    borderRadius: 10,
   },
   soldOverlay: {
     position: 'absolute',
@@ -507,65 +549,76 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10,
   },
   soldText: {
     color: 'white',
     fontWeight: 'bold',
+    fontSize: 18,
+    letterSpacing: 1,
   },
   itemInfo: {
     flex: 1,
     justifyContent: 'center',
+    minHeight: 70,
   },
   itemTitle: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 17,
+    fontWeight: '600',
     marginBottom: 4,
+    color: '#222',
   },
   itemPrice: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#2E7D32',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   itemCategory: {
     fontSize: 14,
     color: '#757575',
+    marginTop: 2,
   },
   actionsContainer: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
+    borderTopColor: '#E0E0E0',
+    backgroundColor: '#F7F7F7',
   },
   actionButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: 13,
+    borderTopWidth: 0,
   },
   editButton: {
     borderRightWidth: 1,
-    borderRightColor: '#EEEEEE',
+    borderRightColor: '#E0E0E0',
   },
   deleteButton: {},
   editButtonText: {
     color: '#2E7D32',
     marginLeft: 8,
-    fontWeight: '500',
+    fontWeight: '600',
+    fontSize: 15,
   },
   deleteButtonText: {
     color: '#FF5722',
     marginLeft: 8,
-    fontWeight: '500',
+    fontWeight: '600',
+    fontSize: 15,
   },
   emptyState: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 60,
+    paddingHorizontal: 10,
   },
   emptyStateTitle: {
     fontSize: 20,

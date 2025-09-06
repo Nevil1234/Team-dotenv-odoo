@@ -32,9 +32,9 @@ const CATEGORIES = [
 ];
 
 const BANNERS = [
-  'https://picsum.photos/800/300?random=1',
-  'https://picsum.photos/800/300?random=2',
-  'https://picsum.photos/800/300?random=3',
+  require('./../../assets/images/promo1.png'),
+  require('./../../assets/images/promo2.png'),
+  // require('./../../assets/images/promo3.png'),
 ];
 
 
@@ -155,8 +155,8 @@ export default function Index() {
   );
 
   const renderBanner = ({ item }: any) => (
-    <Image source={{ uri: item }} style={styles.bannerImage} />
-  );
+      <Image source={item} style={styles.bannerImage} />
+    );
 
   /* ---------- UI ---------- */
   // Determine what to render based on grouping
@@ -400,8 +400,8 @@ const styles = StyleSheet.create({
     color: '#15803d',
     fontWeight: '500',
   },
-  bannerList: { height: 320, marginBottom: 10 },
-  bannerImage: { width: width - 32, height: 320, borderRadius: 10, marginHorizontal: 16 },
+  bannerList: { height: 230, marginBottom: 10 },
+  bannerImage: { width: width - 32, height: 230, borderRadius: 10, marginHorizontal: 16 },
   sectionTitle: { fontSize: 18, fontWeight: '600', marginLeft: 16, marginBottom: 12, color: '#111' },
   catList: { paddingHorizontal: 16, marginBottom: 20 },
   catCard: {

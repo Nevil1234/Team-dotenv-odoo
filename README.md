@@ -56,110 +56,35 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 
 ![Database Schema](https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_86d6b8.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-MethodEndpointDescriptionPOST/api/auth/registerUser registrationPOST/api/auth/loginUser loginGET/api/productsGet all productsPOST/api/productsCreate a productGET/api/products/:idGet product detailsPUT/api/products/:idUpdate a productDELETE/api/products/:idDelete a productGET/api/users/:idGet user profilePUT/api/users/:idUpdate user profileGET/api/cartGet user's cartPOST/api/cartAdd to cartDELETE/api/cart/:productIdRemove from cart
-
-🚀 Deployment
-Backend (Railway)
-
-Connect your repository to Railway.
-Set environment variables in the Railway dashboard.
-Deploy automatically from the main branch.
-
-Frontend (Expo + Hosting)
-
-
-Build the Expo app:
-bashcd frontend
+## 🔌 API Endpoints
+
+| Method | Endpoint               | Description         |
+|--------|-----------------------|-------------------|
+| POST   | `/api/auth/register`   | User registration |
+| POST   | `/api/auth/login`      | User login        |
+| GET    | `/api/products`        | Get all products  |
+| POST   | `/api/products`        | Create a product  |
+| GET    | `/api/products/:id`    | Get product details |
+| PUT    | `/api/products/:id`    | Update a product  |
+| DELETE | `/api/products/:id`    | Delete a product  |
+| GET    | `/api/users/:id`       | Get user profile  |
+| PUT    | `/api/users/:id`       | Update user profile |
+| GET    | `/api/cart`            | Get user's cart   |
+| POST   | `/api/cart`            | Add to cart       |
+| DELETE | `/api/cart/:productId` | Remove from cart  |
+
+---
+
+## 🚀 Deployment
+
+### Backend (Railway)
+
+1. Connect your repository to Railway  
+2. Set environment variables in the Railway dashboard  
+3. Deploy automatically from the `main` branch  
+
+### Frontend (Expo + Hosting)
+
+```bash
+cd frontend
 expo build:web
-
-
-Host the build output on your preferred hosting service (e.g., Netlify, Vercel).
-
-
-
-📝 License
-This project is licensed under the MIT License.
-
-🙏 Acknowledgments
-
-Inspired by the circular economy movement
-Built during the Sustainability Hackathon 2023
-Thanks to all our beta testers and contributors
-
-
-📞 Support
-If you have any questions or need help, please:
-
-Check our FAQ
-Open an issue on GitHub
-Contact us at support@ecofinds.com

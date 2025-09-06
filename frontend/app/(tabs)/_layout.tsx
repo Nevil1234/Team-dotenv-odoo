@@ -1,14 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
+<<<<<<< Updated upstream
 import { Tabs, useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+=======
+import { TouchableOpacity, View, Text, StyleSheet, Platform } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+>>>>>>> Stashed changes
 
 // Custom Header Component
 function CustomHeader({ title, showCartIcon = true, showBackButton = false }: { title: string; showCartIcon?: boolean; showBackButton?: boolean }) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
       <View style={styles.headerLeft}>
         {showBackButton ? (
           <TouchableOpacity 
@@ -90,9 +96,15 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: 'white',
           borderTopColor: '#E8F5E8',
+<<<<<<< Updated upstream
           paddingBottom: insets.bottom || 8, // Use bottom inset or fallback to 8
           paddingTop: 8,
           height: 70 + (insets.bottom || 0), // Adjust height based on insets
+=======
+          paddingTop: 8,
+          height: Platform.OS === 'ios' ? 84 : 70,
+          paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+>>>>>>> Stashed changes
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -143,6 +155,8 @@ export default function TabsLayout() {
         name="cart"
         options={{
           href: null, // This hides it from the tab bar
+          headerShown: false, // This hides the header for cart page
+          tabBarStyle: { display: 'none' }, // This hides the tab bar on the cart page
         }}
       />
     </Tabs>
@@ -156,7 +170,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    paddingTop: 50, // Account for status bar
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#E8F5E8',

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image, Modal, FlatList } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 // Categories for product
 const CATEGORIES = [
-  'Select a category', // Default option
+  'Select a category',
   'Clothing',
   'Electronics',
   'Furniture',
@@ -15,14 +15,62 @@ const CATEGORIES = [
   'Other'
 ];
 
-export default function AddProduct() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState(CATEGORIES[0]);
-  const [price, setPrice] = useState('');
+// Mock data for products (should be replaced with API in real app)
+const MOCK_PRODUCTS = [
+  {
+    id: '1',
+    title: 'Vintage Leather Jacket',
+    description: 'Authentic vintage leather jacket in excellent condition. Size M.',
+    price: 75.00,
+    category: 'Clothing',
+    imageUrl: null,
+    userId: 'user1',
+    status: 'active'
+  },
+  {
+    id: '3',
+    title: 'Mid-Century Modern Chair',
+    description: 'Authentic mid-century modern chair in teak. Some patina but structurally sound.',
+    price: 120.00,
+    category: 'Furniture',
+    imageUrl: null,
+    userId: 'user1',
+    status: 'active'
+  },
+  {
+    id: '6',
+    title: 'Polaroid Camera',
+    description: 'Vintage Polaroid camera from the 1980s. Still works perfectly.',
+    price: 40.00,
+    category: 'Electronics',
+    imageUrl: null,
+    userId: 'user1',
+    status: 'sold'
+  }
+];
+
+export default function EditProduct() {
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+
+  // Find the product to edit
+  const product = MOCK_PRODUCTS.find(p => p.id === id);
+
+  // State for form fields
+  const [title, setTitle] = useState(product ? product.title : '');
+  const [description, setDescription] = useState(product ? product.description : '');
+  const [category, setCategory] = useState(product ? product.category : CATEGORIES[0]);
+  const [price, setPrice] = useState(product ? String(product.price) : '');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const router = useRouter();
+
+  useEffect(() => {
+    if (!product) {
+      Alert.alert('Error', 'Product not found', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    }
+  }, [product]);
 
   const handleSubmit = () => {
     // Validate inputs
@@ -30,40 +78,30 @@ export default function AddProduct() {
       Alert.alert('Error', 'Please enter a title');
       return;
     }
-
     if (!description.trim()) {
       Alert.alert('Error', 'Please enter a description');
       return;
     }
-
     if (category === CATEGORIES[0]) {
       Alert.alert('Error', 'Please select a category');
       return;
     }
-
     if (!price.trim() || isNaN(parseFloat(price)) || parseFloat(price) <= 0) {
       Alert.alert('Error', 'Please enter a valid price');
       return;
     }
-
-    // Here you would typically make an API call to create the product
-    // For now, we'll just simulate success and navigate back
-    Alert.alert('Success', 'Product listed successfully!', [
-      { 
-        text: 'OK', 
-        onPress: () => router.push('/') 
-      }
+    // Here you would typically make an API call to update the product
+    Alert.alert('Success', 'Product updated successfully!', [
+      { text: 'OK', onPress: () => router.push('/(tabs)/mylistings') }
     ]);
   };
 
   const handleAddImage = async () => {
-    // Ask for permission
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission Denied', 'Permission to access media library is required!');
       return;
     }
-    // Open image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -75,11 +113,14 @@ export default function AddProduct() {
     }
   };
 
+  if (!product) {
+    return null;
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Add New Product</Text>
-        
+        <Text style={styles.title}>Edit Product</Text>
         {/* Product Title Input */}
         <Text style={styles.label}>Product Title</Text>
         <TextInput
@@ -89,7 +130,6 @@ export default function AddProduct() {
           onChangeText={setTitle}
           maxLength={100}
         />
-        
         {/* Category Dropdown */}
         <Text style={styles.label}>Category</Text>
         <TouchableOpacity 
@@ -99,7 +139,6 @@ export default function AddProduct() {
           <Text style={styles.pickerText}>{category}</Text>
           <Ionicons name="chevron-down" size={20} color="#757575" />
         </TouchableOpacity>
-        
         {/* Category Modal */}
         <Modal
           visible={dropdownVisible}
@@ -140,7 +179,6 @@ export default function AddProduct() {
             </View>
           </TouchableOpacity>
         </Modal>
-        
         {/* Price Input */}
         <Text style={styles.label}>Price ($)</Text>
         <TextInput
@@ -150,7 +188,6 @@ export default function AddProduct() {
           onChangeText={setPrice}
           keyboardType="numeric"
         />
-        
         {/* Description Input */}
         <Text style={styles.label}>Description</Text>
         <TextInput
@@ -162,7 +199,6 @@ export default function AddProduct() {
           textAlignVertical="top"
           numberOfLines={6}
         />
-        
         {/* Image Upload */}
         <Text style={styles.label}>Product Image</Text>
         <TouchableOpacity 
@@ -185,13 +221,12 @@ export default function AddProduct() {
             </View>
           )}
         </TouchableOpacity>
-        
         {/* Submit Button */}
         <TouchableOpacity 
           style={styles.submitButton}
           onPress={handleSubmit}
         >
-          <Text style={styles.submitButtonText}>Submit Listing</Text>
+          <Text style={styles.submitButtonText}>Update Product</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-// Mock user data - would come from API in a real app
+// Mock user data
 const MOCK_USER = {
   id: 'user1',
   name: 'John Doe',
   email: 'john.doe@example.com',
   phone: '+1 (555) 123-4567',
   location: 'San Francisco, CA',
-  bio: 'Passionate about sustainability and finding unique second-hand items.',
   joinDate: '2025-06-01'
 };
 
@@ -21,40 +20,26 @@ export default function Profile() {
   const router = useRouter();
 
   const handleSave = () => {
-    // Validate inputs
     if (!editedUser.name.trim()) {
       Alert.alert('Error', 'Name cannot be empty');
       return;
     }
-
     if (!editedUser.email.trim()) {
       Alert.alert('Error', 'Email cannot be empty');
       return;
     }
-
-    // In a real app, this would make an API call to update the user
     setUser(editedUser);
     setIsEditing(false);
     Alert.alert('Success', 'Profile updated successfully!');
   };
 
   const handleLogout = () => {
-    // In a real app, this would clear auth tokens etc.
     Alert.alert(
       'Confirm Logout',
       'Are you sure you want to logout?',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        },
-        {
-          text: 'Logout',
-          onPress: () => {
-            // Navigate to login screen
-            router.replace('/login');
-          }
-        }
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Logout', onPress: () => router.replace('/login') }
       ]
     );
   };
@@ -65,138 +50,131 @@ export default function Profile() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.profileImageContainer}>
           <Image 
-            source={require('../../assets/images/icon.png')} // Replace with user avatar
+            source={require('../../assets/images/icon.png')}
             style={styles.profileImage}
           />
         </View>
-        
         <Text style={styles.username}>{user.name}</Text>
         <Text style={styles.joinDate}>Member since {formatDate(user.joinDate)}</Text>
-        
         {!isEditing && (
-          <TouchableOpacity 
-            style={styles.editButton}
-            onPress={() => setIsEditing(true)}
-          >
-            <Ionicons name="pencil" size={16} color="white" />
-            <Text style={styles.editButtonText}>Edit Profile</Text>
+          <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
+            <Ionicons name="pencil" size={17} color="#FFFFFF" />
+            <Text style={styles.editButtonText}>EDIT PROFILE</Text>
           </TouchableOpacity>
         )}
       </View>
-      
+
+      {/* Content */}
       <View style={styles.content}>
         {isEditing ? (
           // Edit Profile Form
-          <View style={styles.editForm}>
+          <View style={styles.section}>
             <Text style={styles.sectionTitle}>Edit Profile</Text>
-            
             <Text style={styles.label}>Name</Text>
             <TextInput
               style={styles.input}
               value={editedUser.name}
-              onChangeText={(text) => setEditedUser({...editedUser, name: text})}
+              onChangeText={(text) => setEditedUser({ ...editedUser, name: text })}
+              placeholder="Enter your name"
             />
-            
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
               value={editedUser.email}
-              onChangeText={(text) => setEditedUser({...editedUser, email: text})}
+              onChangeText={(text) => setEditedUser({ ...editedUser, email: text })}
               keyboardType="email-address"
+              placeholder="Enter your email"
             />
-            
             <Text style={styles.label}>Phone</Text>
             <TextInput
               style={styles.input}
               value={editedUser.phone}
-              onChangeText={(text) => setEditedUser({...editedUser, phone: text})}
+              onChangeText={(text) => setEditedUser({ ...editedUser, phone: text })}
               keyboardType="phone-pad"
+              placeholder="Enter your phone number"
             />
-            
             <Text style={styles.label}>Location</Text>
             <TextInput
               style={styles.input}
               value={editedUser.location}
-              onChangeText={(text) => setEditedUser({...editedUser, location: text})}
+              onChangeText={(text) => setEditedUser({ ...editedUser, location: text })}
+              placeholder="Enter your location"
             />
-            
-            <Text style={styles.label}>Bio</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              value={editedUser.bio}
-              onChangeText={(text) => setEditedUser({...editedUser, bio: text})}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-            
             <View style={styles.formActions}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.actionButton, styles.cancelButton]}
                 onPress={() => {
-                  setEditedUser({...user});
+                  setEditedUser({ ...user });
                   setIsEditing(false);
                 }}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>CANCEL</Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.actionButton, styles.saveButton]}
-                onPress={handleSave}
-              >
-                <Text style={styles.saveButtonText}>Save Changes</Text>
+              <TouchableOpacity style={[styles.actionButton, styles.saveButton]} onPress={handleSave}>
+                <Text style={styles.saveButtonText}>SAVE CHANGES</Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : (
-          // Profile Details
-          <View style={styles.profileDetails}>
-            <Text style={styles.sectionTitle}>Profile Details</Text>
-            
-            <View style={styles.detailRow}>
-              <Ionicons name="mail-outline" size={20} color="#757575" style={styles.detailIcon} />
-              <View>
-                <Text style={styles.detailLabel}>Email</Text>
-                <Text style={styles.detailValue}>{user.email}</Text>
+          <>
+            {/* Profile Details */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Profile Details</Text>
+              <View style={styles.detailRow}>
+                <Ionicons name="mail" size={20} color="#2E7D32" style={styles.detailIcon} />
+                <View>
+                  <Text style={styles.detailLabel}>Email</Text>
+                  <Text style={styles.detailValue}>{user.email}</Text>
+                </View>
+              </View>
+              <View style={styles.detailRow}>
+                <Ionicons name="call" size={20} color="#2E7D32" style={styles.detailIcon} />
+                <View>
+                  <Text style={styles.detailLabel}>Phone</Text>
+                  <Text style={styles.detailValue}>{user.phone}</Text>
+                </View>
+              </View>
+              <View style={styles.detailRow}>
+                <Ionicons name="location" size={20} color="#2E7D32" style={styles.detailIcon} />
+                <View>
+                  <Text style={styles.detailLabel}>Location</Text>
+                  <Text style={styles.detailValue}>{user.location}</Text>
+                </View>
               </View>
             </View>
-            
-            <View style={styles.detailRow}>
-              <Ionicons name="call-outline" size={20} color="#757575" style={styles.detailIcon} />
-              <View>
-                <Text style={styles.detailLabel}>Phone</Text>
-                <Text style={styles.detailValue}>{user.phone}</Text>
+
+            {/* My Activity Card */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>My Activity</Text>
+              <View style={styles.activityButtons}>
+                <TouchableOpacity
+                  style={[styles.activityButton, styles.listingsButton]}
+                  onPress={() => router.push('/(tabs)/mylistings')}
+                >
+                  <Ionicons name="storefront" size={22} color="#FFFFFF" />
+                  <Text style={styles.activityButtonText}>MY LISTINGS</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.activityButton, styles.purchasesButton]}
+                  onPress={() => router.push('/(tabs)/purchases')}
+                >
+                  <Ionicons name="cart" size={22} color="#FFFFFF" />
+                  <Text style={styles.activityButtonText}>MY PURCHASES</Text>
+                </TouchableOpacity>
               </View>
             </View>
-            
-            <View style={styles.detailRow}>
-              <Ionicons name="location-outline" size={20} color="#757575" style={styles.detailIcon} />
-              <View>
-                <Text style={styles.detailLabel}>Location</Text>
-                <Text style={styles.detailValue}>{user.location}</Text>
-              </View>
-            </View>
-            
-            <View style={styles.bioSection}>
-              <Text style={styles.bioLabel}>About Me</Text>
-              <Text style={styles.bioValue}>{user.bio}</Text>
-            </View>
-          </View>
-        )}
-        
-        {!isEditing && (
-          <TouchableOpacity 
-            style={styles.logoutButton}
-            onPress={handleLogout}
-          >
-            <Ionicons name="log-out-outline" size={20} color="#FF5722" />
-            <Text style={styles.logoutButtonText}>Logout</Text>
-          </TouchableOpacity>
+
+            {/* Logout Button */}
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Ionicons name="log-out" size={22} color="#EF4444" />
+              <Text style={styles.logoutButtonText}>LOGOUT</Text>
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </ScrollView>
@@ -206,66 +184,92 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F7F7F7',
   },
   header: {
     backgroundColor: '#2E7D32',
-    paddingTop: 20,
-    paddingBottom: 30,
+    paddingTop: 40,
+    paddingBottom: 24,
     alignItems: 'center',
-  },
-  profileImageContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
+  profileImageContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 4,
+    borderColor: '#E8F5E9',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   profileImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 108,
+    height: 108,
+    borderRadius: 54,
   },
   username: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 4,
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
   joinDate: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: '#E8F5E9',
     marginBottom: 16,
   },
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    backgroundColor: '#1B5E20',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   editButtonText: {
-    color: 'white',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginLeft: 8,
+    letterSpacing: 0.5,
   },
   content: {
-    padding: 16,
+    padding: 20,
+  },
+  section: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  profileDetails: {
-    marginBottom: 20,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 16,
   },
   detailRow: {
     flexDirection: 'row',
@@ -273,49 +277,38 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   detailIcon: {
-    marginRight: 16,
-    marginTop: 2,
+    marginRight: 12,
+    marginTop: 4,
+    color: '#2E7D32',
   },
   detailLabel: {
     fontSize: 14,
-    color: '#757575',
+    color: '#6B7280',
+    fontWeight: '500',
     marginBottom: 4,
   },
   detailValue: {
     fontSize: 16,
-  },
-  bioSection: {
-    marginTop: 12,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
-  },
-  bioLabel: {
-    fontSize: 16,
+    color: '#1F2937',
     fontWeight: '500',
-    marginBottom: 8,
-  },
-  bioValue: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#424242',
   },
   editForm: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1F2937',
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F3F4F6',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: '#E5E7EB',
   },
   textArea: {
     height: 120,
@@ -324,47 +317,97 @@ const styles = StyleSheet.create({
   formActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 20,
+    marginHorizontal: 4,
   },
   actionButton: {
     flex: 1,
-    height: 48,
-    borderRadius: 8,
+    height: 52,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   cancelButton: {
-    backgroundColor: '#F5F5F5',
-    marginRight: 8,
+    backgroundColor: '#F3F4F6',
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   saveButton: {
     backgroundColor: '#2E7D32',
-    marginLeft: 8,
+    marginLeft: 10,
   },
   cancelButtonText: {
-    color: '#757575',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '700',
+    color: '#4B5563',
+    letterSpacing: 0.5,
   },
   saveButtonText: {
-    color: 'white',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  activityButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 4,
+    gap: 16,
+  },
+  activityButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 13,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  listingsButton: {
+    backgroundColor: '#2E7D32',
+  },
+  purchasesButton: {
+    backgroundColor: '#2E7D32',
+  },
+  activityButtonText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginLeft: 5,
+    letterSpacing: 0.5,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#FF5722',
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: '#EF4444',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
     marginTop: 20,
+    marginHorizontal: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   logoutButtonText: {
-    color: '#FF5722',
     fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 8,
+    fontWeight: '700',
+    color: '#EF4444',
+    marginLeft: 10,
+    letterSpacing: 0.5,
   },
 });

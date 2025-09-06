@@ -88,8 +88,7 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 ```bash
 cd frontend
 expo build:web
-
-
+```
 ### 📝 License
 
 This project is licensed under the MIT License.  

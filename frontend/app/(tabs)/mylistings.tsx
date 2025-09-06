@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 // Mock data for user's listings - would come from API in a real app
 const MOCK_MY_LISTINGS = [
@@ -39,9 +39,16 @@ const MOCK_MY_LISTINGS = [
 
 export default function MyListings() {
   const [listings, setListings] = useState(MOCK_MY_LISTINGS);
+  const [search, setSearch] = useState('');
+  const [sortOpen, setSortOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [groupOpen, setGroupOpen] = useState(false);
+  const [selectedSort, setSelectedSort] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState('');
   const router = useRouter();
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string) => {
     Alert.alert(
       'Delete Listing',
       'Are you sure you want to delete this listing?',
@@ -62,7 +69,77 @@ export default function MyListings() {
     );
   };
 
-  const renderListingItem = ({ item }) => (
+  // Filter listings based on search and filter options
+  const filteredListings = listings.filter((listing) => {
+    // Apply search filter
+    const matchesSearch = listing.title.toLowerCase().includes(search.toLowerCase()) || 
+                          listing.description.toLowerCase().includes(search.toLowerCase());
+    
+    // Apply filter based on selected filter
+    let matchesFilter = true;
+    if (selectedFilter === 'Active') {
+      matchesFilter = listing.status === 'active';
+    } else if (selectedFilter === 'Sold') {
+      matchesFilter = listing.status === 'sold';
+    } else if (selectedFilter === 'Clothing') {
+      matchesFilter = listing.category === 'Clothing';
+    } else if (selectedFilter === 'Electronics') {
+      matchesFilter = listing.category === 'Electronics';
+    } else if (selectedFilter === 'Furniture') {
+      matchesFilter = listing.category === 'Furniture';
+    }
+    
+    return matchesSearch && matchesFilter;
+  });
+
+  // Sort listings based on selected sort option
+  const sortedListings = [...filteredListings].sort((a, b) => {
+    if (selectedSort === 'Price: low') {
+      return a.price - b.price;
+    } else if (selectedSort === 'Price: high') {
+      return b.price - a.price;
+    } else if (selectedSort === 'Name') {
+      return a.title.localeCompare(b.title);
+    }
+    return 0; // Default: no sorting
+  });
+
+  // Group listings based on selected group option
+  const groupedListings = () => {
+    if (selectedGroup === 'Category') {
+      // Group by category
+      const groups: Record<string, typeof listings> = {};
+      sortedListings.forEach(listing => {
+        if (!groups[listing.category]) {
+          groups[listing.category] = [];
+        }
+        groups[listing.category].push(listing);
+      });
+      return groups;
+    } else if (selectedGroup === 'Status') {
+      // Group by status
+      const groups: Record<string, typeof listings> = {
+        'Active': [],
+        'Sold': []
+      };
+      
+      sortedListings.forEach(listing => {
+        if (listing.status === 'active') {
+          groups['Active'].push(listing);
+        } else if (listing.status === 'sold') {
+          groups['Sold'].push(listing);
+        }
+      });
+      return groups;
+    }
+    
+    // No grouping
+    return null;
+  };
+  
+  const listingsToDisplay = selectedGroup ? null : sortedListings;
+
+  const renderListingItem = ({ item }: { item: typeof listings[0] }) => (
     <View style={styles.listingItem}>
       <TouchableOpacity 
         style={styles.listingContent}
@@ -91,7 +168,7 @@ export default function MyListings() {
       <View style={styles.actionsContainer}>
         <TouchableOpacity 
           style={[styles.actionButton, styles.editButton]}
-          onPress={() => router.push(`/editProduct/${item.id}`)}
+          onPress={() => router.push(`/product/${item.id}`)}
         >
           <Ionicons name="create-outline" size={18} color="#2E7D32" />
           <Text style={styles.editButtonText}>Edit</Text>
@@ -108,6 +185,55 @@ export default function MyListings() {
     </View>
   );
 
+  // Render content based on grouping
+  const renderContent = () => {
+    if (selectedGroup) {
+      const groups = groupedListings();
+      if (!groups) return null;
+      
+      return (
+        <>
+          {Object.entries(groups).map(([groupName, groupListings]) => (
+            <View key={groupName}>
+              <Text style={styles.groupHeader}>{groupName} ({groupListings.length})</Text>
+              {groupListings.map(listing => (
+                <View key={listing.id}>
+                  {renderListingItem({ item: listing })}
+                </View>
+              ))}
+            </View>
+          ))}
+        </>
+      );
+    }
+    
+    // Default rendering with FlatList when no grouping
+    return (
+      <FlatList
+        data={sortedListings}
+        renderItem={renderListingItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listingsContainer}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Ionicons name="list" size={80} color="#BDBDBD" />
+            <Text style={styles.emptyStateTitle}>No Listings Yet</Text>
+            <Text style={styles.emptyStateDescription}>
+              You haven&apos;t created any product listings yet
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.createListingButton}
+              onPress={() => router.push('/addProduct')}
+            >
+              <Text style={styles.createListingButtonText}>Create Listing</Text>
+            </TouchableOpacity>
+          </View>
+        }
+      />
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -121,19 +247,54 @@ export default function MyListings() {
         </TouchableOpacity>
       </View>
       
-      {listings.length > 0 ? (
-        <FlatList
-          data={listings}
-          renderItem={renderListingItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listingsContainer}
+      {/* Search Bar */}
+      <View style={styles.searchWrap}>
+        <Ionicons name="search" size={20} color="#6b7280" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search listings…"
+          value={search}
+          onChangeText={setSearch}
         />
+      </View>
+
+      {/* Dropdowns */}
+      <View style={styles.dropdownRow}>
+        <Dropdown
+          label="Sort"
+          open={sortOpen}
+          setOpen={setSortOpen}
+          options={['Price: low', 'Price: high', 'Name']}
+          selectedOption={selectedSort}
+          onSelect={setSelectedSort}
+        />
+        <Dropdown
+          label="Filter"
+          open={filterOpen}
+          setOpen={setFilterOpen}
+          options={['Active', 'Sold', 'Clothing', 'Electronics', 'Furniture']}
+          selectedOption={selectedFilter}
+          onSelect={setSelectedFilter}
+        />
+        <Dropdown
+          label="Group"
+          open={groupOpen}
+          setOpen={setGroupOpen}
+          options={['Category', 'Status']}
+          selectedOption={selectedGroup}
+          onSelect={setSelectedGroup}
+        />
+      </View>
+      
+      {/* Content */}
+      {listings.length > 0 ? (
+        renderContent()
       ) : (
         <View style={styles.emptyState}>
           <Ionicons name="list" size={80} color="#BDBDBD" />
           <Text style={styles.emptyStateTitle}>No Listings Yet</Text>
           <Text style={styles.emptyStateDescription}>
-            You haven't created any product listings yet
+            You haven&apos;t created any product listings yet
           </Text>
           
           <TouchableOpacity 
@@ -142,6 +303,65 @@ export default function MyListings() {
           >
             <Text style={styles.createListingButtonText}>Create Listing</Text>
           </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               Dropdown Component                               */
+/* -------------------------------------------------------------------------- */
+function Dropdown({
+  label,
+  open,
+  setOpen,
+  options,
+  selectedOption,
+  onSelect,
+}: {
+  label: string;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  options: string[];
+  selectedOption: string;
+  onSelect: (option: string) => void;
+}) {
+  return (
+    <View style={{ flex: 1 }}>
+      <TouchableOpacity style={styles.dropdownBtn} onPress={() => setOpen(!open)}>
+        <Text style={styles.dropdownLbl}>
+          {selectedOption ? `${label}: ${selectedOption}` : label}
+        </Text>
+        <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color="#6b7280" />
+      </TouchableOpacity>
+      {open && (
+        <View style={styles.dropdownMenu}>
+          <TouchableOpacity 
+            key="clear" 
+            style={styles.dropdownItem}
+            onPress={() => {
+              onSelect('');
+              setOpen(false);
+            }}
+          >
+            <Text>Clear</Text>
+          </TouchableOpacity>
+          {options.map((o) => (
+            <TouchableOpacity 
+              key={o} 
+              style={[
+                styles.dropdownItem,
+                selectedOption === o && styles.selectedDropdownItem
+              ]}
+              onPress={() => {
+                onSelect(o);
+                setOpen(false);
+              }}
+            >
+              <Text style={selectedOption === o ? styles.selectedDropdownText : undefined}>{o}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       )}
     </View>
@@ -176,6 +396,82 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '500',
     marginLeft: 4,
+  },
+  // Search bar styles
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    paddingHorizontal: 10,
+    height: 48,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  searchInput: { 
+    flex: 1, 
+    marginLeft: 8, 
+    fontSize: 16 
+  },
+  // Dropdown styles
+  dropdownRow: { 
+    flexDirection: 'row', 
+    gap: 8, 
+    marginBottom: 16 
+  },
+  dropdownBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  dropdownLbl: { 
+    fontSize: 14, 
+    color: '#374151' 
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    marginTop: 4,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  dropdownItem: { 
+    padding: 10, 
+    borderBottomWidth: 1, 
+    borderColor: '#f3f4f6' 
+  },
+  selectedDropdownItem: {
+    backgroundColor: '#f0fdf4',
+  },
+  selectedDropdownText: {
+    color: '#15803d',
+    fontWeight: '500',
+  },
+  // Group header style
+  groupHeader: {
+    fontSize: 16,
+    fontWeight: '600',
+    backgroundColor: '#f9fafb',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginBottom: 8,
   },
   listingsContainer: {
     paddingBottom: 20,

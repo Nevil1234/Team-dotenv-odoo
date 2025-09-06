@@ -1,6 +1,7 @@
-import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { Tabs, useRouter } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Custom Header Component
 function CustomHeader({ title, showCartIcon = true, showBackButton = false }: { title: string; showCartIcon?: boolean; showBackButton?: boolean }) {
@@ -49,6 +50,8 @@ function CustomHeader({ title, showCartIcon = true, showBackButton = false }: { 
 }
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+  
   return (
     <Tabs
       screenOptions={{
@@ -87,9 +90,9 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: 'white',
           borderTopColor: '#E8F5E8',
-          paddingBottom: 8,
+          paddingBottom: insets.bottom || 8, // Use bottom inset or fallback to 8
           paddingTop: 8,
-          height: 70,
+          height: 70 + (insets.bottom || 0), // Adjust height based on insets
         },
         tabBarLabelStyle: {
           fontSize: 12,

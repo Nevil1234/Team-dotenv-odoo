@@ -31,9 +31,76 @@ EcoFinds is revolutionizing sustainable consumption through a trusted second-han
 - PostgreSQL database
 - Railway account (for deployment)
 
+## Installation
 
+## 1. Clone the repository
 
-## 🏗️ Architecture
+```bash
+git clone https://github.com/yourusername/ecofinds.git
+cd ecofinds
+```
+
+##  2. Install backend dependencies
+```bash
+cd backend
+npm install
+```
+
+## 3. Install frontend dependencies
+```bash
+
+cd ../frontend
+npm install
+```
+
+## 4. Set up environment variables
+
+# Backend (.env)
+
+# (Create a .env file in the backend folder with the following content)
+```bash
+
+DATABASE_URL=your_postgresql_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=3001
+```
+
+# Frontend (app.config.js)
+# (Edit app.config.js in the frontend folder as follows)
+```bash
+
+export default {
+  expo: {
+    extra: {
+      apiUrl: process.env.API_URL || "http://localhost:3001",
+    },
+  },
+};
+```
+
+## 5. Initialize database
+```bash
+
+cd backend
+npx sequelize-cli db:migrate
+```
+
+## 6. Start development servers
+```bash
+
+# Backend
+cd backend
+npm run dev
+```
+
+# Frontend
+```bash
+
+cd frontend
+npm start
+```
+
+### 🏗️ Architecture
 
 Here’s an overview of the project architecture:
 
@@ -41,7 +108,7 @@ Here’s an overview of the project architecture:
 
 ---
 
-## 🎨 UI Components
+### 🎨 UI Components
 
 EcoFinds features a clean, modern interface with sustainability at its core:
 

@@ -86,21 +86,22 @@ npx sequelize-cli db:migrate
 ```
 
 ## 6. Start development servers
-```bash
 
 # Backend
+```bash
+
 cd backend
 npm run dev
 ```
 
-# Frontend
+## Frontend
 ```bash
 
 cd frontend
 npm start
 ```
 
-#### 🏗️ Architecture
+## 🏗️ Architecture
 
 Here’s an overview of the project architecture:
 
@@ -119,11 +120,11 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 
 ---
 
-#### 🗂️ Database Schema
+## 🗂️ Database Schema
 
 ![Database Schema](https://github.com/shrey3108/VirtualCommunity_TS/blob/main/deepseek_mermaid_20250906_86d6b8.png)
 
-#### 🔌 API Endpoints
+## 🔌 API Endpoints
 
 | Method | Endpoint               | Description         |
 |--------|-----------------------|-------------------|
@@ -142,7 +143,7 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 
 ---
 
-#### 🚀 Deployment
+## 🚀 Deployment
 
 ### Backend (Railway)
 
@@ -156,7 +157,7 @@ EcoFinds features a clean, modern interface with sustainability at its core:
 cd frontend
 expo build:web
 ```
-#### 📝 License
+## 📝 License
 
 This project is licensed under the MIT License.  
 https://opensource.org/licenses/MIT

@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getProductImage } from '../../utils/images/productImages';
 
 const { width } = Dimensions.get('window');
 
@@ -13,7 +14,7 @@ const MOCK_PRODUCTS = [
     description: 'Authentic vintage leather jacket in excellent condition. Size M. Premium leather with a beautiful patina. Intact lining, smooth zippers. A timeless piece.',
     price: 75.00,
     category: 'Clothing',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' },
     userId: 'user1',
     seller: 'VintageFinds'
   },
@@ -23,7 +24,7 @@ const MOCK_PRODUCTS = [
     description: 'Used iPhone 12 Pro, 128GB, Pacific Blue. Minor scratches, 88% battery health. Includes charger and box. Perfectly functional.',
     price: 550.00,
     category: 'Electronics',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8aXBob25lJTIwMTIlMjBwcm98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60' },
     userId: 'user2',
     seller: 'TechRecycle'
   },
@@ -33,7 +34,7 @@ const MOCK_PRODUCTS = [
     description: '1960s Danish teak chair with warm patina. Structurally sound, recently reupholstered cushions. A stunning mid-century piece.',
     price: 120.00,
     category: 'Furniture',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1611486212557-88be5ff6f941?auto=format&fit=crop&w=500&h=500&q=80' },
     userId: 'user1',
     seller: 'VintageFinds'
   },
@@ -43,7 +44,7 @@ const MOCK_PRODUCTS = [
     description: 'Trek mountain bike, 29" wheels, hydraulic disc brakes. Lightweight aluminum frame, Shimano gears. Well-maintained for trails or city.',
     price: 380.00,
     category: 'Sports',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=500&h=500&q=80' },
     userId: 'user3',
     seller: 'ActiveLife'
   },
@@ -53,7 +54,7 @@ const MOCK_PRODUCTS = [
     description: 'Complete hardcover Harry Potter series. Minimal wear, intact dust jackets. Perfect for fans, no damage to pages.',
     price: 65.00,
     category: 'Books',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1598153346810-860daa814c4b?auto=format&fit=crop&w=500&h=500&q=80' },
     userId: 'user2',
     seller: 'BookWorm'
   }
@@ -101,7 +102,7 @@ export default function ProductDetails() {
       <View style={styles.heroSection}>
         <View style={styles.imageContainer}>
           <Image
-            source={require('../../assets/images/splash-icon.png')}
+            source={product.imageUrl || getProductImage(product.title, product.category)}
             style={styles.productImage}
             resizeMode="cover"
           />

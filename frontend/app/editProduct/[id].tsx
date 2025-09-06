@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image, Modal, FlatList } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { getProductImage } from '../../utils/images/productImages';
 
 // Categories for product
 const CATEGORIES = [
@@ -23,7 +24,7 @@ const MOCK_PRODUCTS = [
     description: 'Authentic vintage leather jacket in excellent condition. Size M.',
     price: 75.00,
     category: 'Clothing',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' },
     userId: 'user1',
     status: 'active'
   },
@@ -33,7 +34,7 @@ const MOCK_PRODUCTS = [
     description: 'Authentic mid-century modern chair in teak. Some patina but structurally sound.',
     price: 120.00,
     category: 'Furniture',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1561677843-39dee7a319ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWlkJTIwY2VudHVyeSUyMGNoYWlyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60' },
     userId: 'user1',
     status: 'active'
   },
@@ -43,7 +44,7 @@ const MOCK_PRODUCTS = [
     description: 'Vintage Polaroid camera from the 1980s. Still works perfectly.',
     price: 40.00,
     category: 'Electronics',
-    imageUrl: null,
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cG9sYXJvaWQlMjBjYW1lcmF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60' },
     userId: 'user1',
     status: 'sold'
   }
@@ -180,7 +181,7 @@ export default function EditProduct() {
           </TouchableOpacity>
         </Modal>
         {/* Price Input */}
-        <Text style={styles.label}>Price ($)</Text>
+        <Text style={styles.label}>Price (₹)</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter price"
@@ -215,9 +216,13 @@ export default function EditProduct() {
               <Text style={styles.imageAddedText}>Image Selected</Text>
             </View>
           ) : (
-            <View style={styles.imagePlaceholder}>
-              <Ionicons name="camera-outline" size={40} color="#BDBDBD" />
-              <Text style={styles.imagePlaceholderText}>+ Add Image</Text>
+            <View style={styles.imagePreviewContainer}>
+              <Image 
+                source={product.imageUrl || getProductImage(title, category)}
+                style={{ width: '100%', height: 170, borderRadius: 10 }}
+                resizeMode="cover"
+              />
+              <Text style={styles.imagePlaceholderText}>Tap to change image</Text>
             </View>
           )}
         </TouchableOpacity>

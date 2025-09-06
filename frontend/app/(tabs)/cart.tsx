@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, Alert, SafeA
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getProductImage } from '../../utils/images/productImages';
 
 const { width } = Dimensions.get('window');
 
@@ -16,7 +17,7 @@ const MOCK_CART_ITEMS = [
       description: 'Authentic vintage leather jacket in excellent condition. Size M.',
       price: 75.00,
       category: 'Clothing',
-      imageUrl: null, // We'll use a placeholder
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' },
       userId: 'user1'
     },
     quantity: 1
@@ -29,7 +30,7 @@ const MOCK_CART_ITEMS = [
       description: 'Authentic mid-century modern chair in teak. Some patina but structurally sound.',
       price: 120.00,
       category: 'Furniture',
-      imageUrl: null,
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1611486212557-88be5ff6f941?auto=format&fit=crop&w=500&h=500&q=80' },
       userId: 'user1'
     },
     quantity: 1
@@ -42,7 +43,7 @@ const MOCK_CART_ITEMS = [
       description: 'Authentic vintage leather jacket in excellent condition. Size M.',
       price: 75.00,
       category: 'Clothing',
-      imageUrl: null, // We'll use a placeholder
+      imageUrl: { uri: 'https://images.unsplash.com/photo-1509113590018-7e0f14a640ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' },
       userId: 'user1'
     },
     quantity: 1
@@ -89,7 +90,7 @@ export default function Cart() {
       <View style={styles.cardShadow}>
         <View style={styles.imageContainer}>
           <Image 
-            source={require('../../assets/images/splash-icon.png')}
+            source={item.product.imageUrl || getProductImage(item.product.title, item.product.category)}
             style={styles.productImage}
             resizeMode="cover"
           />
@@ -108,7 +109,7 @@ export default function Cart() {
           </View>
           
           <Text style={styles.itemCategory}>{item.product.category}</Text>
-          <Text style={styles.itemPrice}>${item.product.price.toFixed(2)}</Text>
+          <Text style={styles.itemPrice}>₹{item.product.price.toFixed(2)}</Text>
           
           <View style={styles.quantityContainer}>
             <Text style={styles.quantityLabel}>Quantity:</Text>
@@ -135,7 +136,7 @@ export default function Cart() {
           
           <View style={styles.itemTotal}>
             <Text style={styles.itemTotalLabel}>Subtotal:</Text>
-            <Text style={styles.itemTotalPrice}>${(item.product.price * item.quantity).toFixed(2)}</Text>
+            <Text style={styles.itemTotalPrice}>₹{(item.product.price * item.quantity).toFixed(2)}</Text>
           </View>
         </View>
       </View>
@@ -177,7 +178,7 @@ export default function Cart() {
                     
                     <View style={styles.summaryRow}>
                       <Text style={styles.summaryLabel}>Subtotal ({cartItems.length} items)</Text>
-                      <Text style={styles.summaryValue}>${totalPrice.toFixed(2)}</Text>
+                      <Text style={styles.summaryValue}>₹{totalPrice.toFixed(2)}</Text>
                     </View>
                     
                     <View style={styles.summaryRow}>
@@ -189,7 +190,7 @@ export default function Cart() {
                     
                     <View style={styles.totalRow}>
                       <Text style={styles.totalLabel}>Total</Text>
-                      <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
+                      <Text style={styles.totalPrice}>₹{totalPrice.toFixed(2)}</Text>
                     </View>
                     
                     <TouchableOpacity 

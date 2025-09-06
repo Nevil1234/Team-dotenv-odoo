@@ -4,8 +4,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 export default function RootLayout() {
-  // For demo purposes, let's set the user as not authenticated to show login first
-  const [isAuthenticated] = useState(false);
+  // For demo purposes, let's set the user as authenticated so we can navigate to product pages directly
+  const [isAuthenticated] = useState(true);
   
   if (!isAuthenticated) {
     return (

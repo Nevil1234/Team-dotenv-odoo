@@ -12,15 +12,46 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { getProductImage } from '../../utils/images/productImages';
 
 const { width } = Dimensions.get('window');
 
 const MOCK_PRODUCTS = [
-  { id: '1', title: 'Vintage Leather Jacket', price: 75, category: 'Clothing' },
-  { id: '2', title: 'iPhone 12 Pro', price: 550, category: 'Electronics' },
-  { id: '3', title: 'Mid-Century Chair', price: 120, category: 'Furniture' },
-  { id: '4', title: 'Trek Mountain Bike', price: 380, category: 'Sports' },
-  { id: '5', title: 'Harry Potter Set', price: 65, category: 'Books' },
+  { 
+    id: '1', 
+    title: 'Vintage Leather Jacket', 
+    price: 75, 
+    category: 'Clothing',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60' }
+  },
+  { 
+    id: '2', 
+    title: 'iPhone 12 Pro', 
+    price: 550, 
+    category: 'Electronics',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1603921326210-6edd2d60ca68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8aXBob25lJTIwMTIlMjBwcm98ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60' }
+  },
+  { 
+    id: '3', 
+    title: 'Mid-Century Chair', 
+    price: 120, 
+    category: 'Furniture',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1611486212557-88be5ff6f941?auto=format&fit=crop&w=500&h=500&q=80' }
+  },
+  { 
+    id: '4', 
+    title: 'Trek Mountain Bike', 
+    price: 380, 
+    category: 'Sports',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=500&h=500&q=80' }
+  },
+  { 
+    id: '5', 
+    title: 'Harry Potter Set', 
+    price: 65, 
+    category: 'Books',
+    imageUrl: { uri: 'https://images.unsplash.com/photo-1598153346810-860daa814c4b?auto=format&fit=crop&w=500&h=500&q=80' }
+  },
 ];
 
 const CATEGORIES = [
@@ -65,7 +96,7 @@ export default function Index() {
     } else if (selectedFilter === 'Used') {
       matchesCondition = parseInt(p.id) % 2 !== 0; // Odd IDs are "Used" for demo
     } else if (selectedFilter === 'Free-ship') {
-      matchesCondition = p.price > 100; // Items over $100 have free shipping for demo
+      matchesCondition = p.price > 100; // Items over ₹100 have free shipping for demo
     }
     
     return matchesSearch && matchesCategory && matchesCondition;
@@ -98,18 +129,18 @@ export default function Index() {
     } else if (selectedGroup === 'Price') {
       // Group by price range
       const groups: Record<string, typeof MOCK_PRODUCTS> = {
-        'Under $100': [],
-        '$100 - $300': [],
-        'Over $300': []
+        'Under ₹100': [],
+        '₹100 - ₹300': [],
+        'Over ₹300': []
       };
       
       sortedProducts.forEach(product => {
         if (product.price < 100) {
-          groups['Under $100'].push(product);
+          groups['Under ₹100'].push(product);
         } else if (product.price <= 300) {
-          groups['$100 - $300'].push(product);
+          groups['₹100 - ₹300'].push(product);
         } else {
-          groups['Over $300'].push(product);
+          groups['Over ₹300'].push(product);
         }
       });
       return groups;
@@ -127,13 +158,14 @@ export default function Index() {
       style={styles.productCard}
       onPress={() => router.push(`/product/${item.id}`)}>
       <Image
-        source={require('../../assets/images/splash-icon.png')}
+        source={item.imageUrl || getProductImage(item.title, item.category)}
         style={styles.productImage}
+        resizeMode="cover"
       />
       <Text style={styles.productTitle} numberOfLines={1}>
         {item.title}
       </Text>
-      <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
+      <Text style={styles.productPrice}>₹{item.price.toFixed(2)}</Text>
     </TouchableOpacity>
   );
 

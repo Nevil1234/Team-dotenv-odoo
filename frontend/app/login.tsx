@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Text, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TextInput, View, Text, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { mockStorage } from '../utils/storage/mockStorage';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = () => {
-    // Dev mode: Skip authentication and go directly to home
-    console.log('Dev mode login with:', email, password);
-    
-    // Navigate to the main tabs screen (home page)
+
+  setIsLoading(true);
+
+  // Simulate API delay
+  setTimeout(() => {
+    setIsLoading(false);
+
+    // Redirect to home regardless of credentials
     router.replace('/(tabs)');
-  };
+  }, 1000);
+};
+
 
   return (
     <View style={styles.container}>
@@ -23,11 +31,11 @@ export default function Login() {
       {/* App Logo */}
       <View style={styles.logoContainer}>
         <Image 
-          source={require('../assets/images/icon.png')} 
+          source={require('../assets/images/logo.png')} 
           style={styles.logo} 
           resizeMode="contain"
         />
-        <Text style={styles.appTitle}>EcoFinds</Text>
+
         <Text style={styles.subtitle}>Sustainable Second-Hand Marketplace</Text>
       </View>
 
@@ -53,8 +61,13 @@ export default function Login() {
         <TouchableOpacity 
           style={styles.loginButton}
           onPress={handleLogin}
+          disabled={isLoading}
         >
-          <Text style={styles.loginButtonText}>Login</Text>
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.loginButtonText}>Login</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.signupContainer}>
@@ -82,8 +95,8 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 420,
+    height: 180,
   },
   appTitle: {
     fontSize: 32,
@@ -95,6 +108,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#757575',
     marginTop: 8,
+    flex:1,
+    textAlign: 'left',
   },
   formContainer: {
     width: '100%',

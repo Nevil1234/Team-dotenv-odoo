@@ -10,11 +10,194 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model UserImage {
+  id        Int      @id @default(autoincrement())
+  url       String   // URL from Cloudinary
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int      @unique  // One-to-one relation with User
+  isPrimary Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  @@index([userId])
+}
+
+model UserProfile {
   id          Int      @id @default(autoincrement())
-  displayName String
-  email       String   @unique
-  password    String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int      @unique // One-to-one relation with User
+  fullName    String
+  phoneNumber String   @unique
+  address     Address? // One-to-one relation with Address
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Address {
+  id           Int         @id @default(autoincrement())
+  street       String
+  city         String
+  state        String
+  country      String
+  postalCode   String
+  userProfile  UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  userProfileId Int        @unique
+  isDefault    Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([userProfileId])
+}
+
+model User {
+  id              Int           @id @default(autoincrement())
+  displayName     String
+  email          String        @unique
+  password       String
+  image          UserImage?    // One-to-one relation with UserImage
+  profile        UserProfile?  // One-to-one relation with UserProfile
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  products       Product[]     @relation("SellerProducts") // Products user is selling
+  interactions   UserProduct[] // User's interactions with products
+  productLists   ProductList[] // Relation to product lists
+  purchases     Purchase[]    // User's purchase history
+}
+
+enum ProductCondition {
+  NEW
+  LIKE_NEW
+  GOOD
+  FAIR
+  POOR
+}
+
+enum ProductCategory {
+  ELECTRONICS
+  FURNITURE
+  CLOTHING
+  BOOKS
+  SPORTS
+  AUTOMOTIVE
+  HOME_GARDEN
+  TOYS_GAMES
+  OTHERS
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  url       String   // URL from Cloudinary
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  isPrimary Boolean @default(false)  // To mark the main product image
+  createdAt DateTime @default(now())
+  
+  @@index([productId])
+}
+
+// Define interaction types between users and products
+enum UserProductInteraction {
+  FAVORITE
+  CART
+  VIEWED
+  WISHLIST
+}
+
+model UserProduct {
+  id          Int                   @id @default(autoincrement())
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  product     Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   Int
+  interaction UserProductInteraction
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  quantity    Int?                  // For cart items
+  notes       String?               // For wishlist or any additional info
+
+  @@unique([userId, productId, interaction]) // One interaction type per user per product
+  @@index([userId])
+  @@index([productId])
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  SOLD
+  PENDING
+}
+
+model ProductList {
+  id          Int           @id @default(autoincrement())
+  name        String
+  price       Decimal       @db.Decimal(10, 2)
+  category    ProductCategory
+  status      ProductStatus @default(ACTIVE)
+  product     Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   Int          @unique
+  seller      User         @relation(fields: [sellerId], references: [id])
+  sellerId    Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([sellerId])
+  @@index([productId])
+}
+
+model Product {
+  id                    Int             @id @default(autoincrement())
+  images               ProductImage[]   // Relation to product images
+  title                String
+  category             ProductCategory
+  description          String          @db.Text
+  price                Decimal         @db.Decimal(10, 2)
+  quantity             Int
+  condition            ProductCondition
+  yearOfManufacture    Int?
+  brand                String?
+  model                String?
+  length               Float?          // in centimeters
+  width                Float?          // in centimeters
+  height               Float?          // in centimeters
+  weight               Float?          // in kilograms
+  material             String?
+  color                String?
+  hasOriginalPackaging Boolean         @default(false)
+  hasManual            Boolean         @default(false)
+  workingCondition     String          @db.Text
+  
+  // Timestamps
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  // Relations
+  seller               User            @relation("SellerProducts", fields: [sellerId], references: [id])
+  sellerId             Int
+  userInteractions     UserProduct[]   // Relation to user interactions
+  productList          ProductList?
+  purchases             Purchase[]      // Purchase history of this product
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+model Purchase {
+  id            Int            @id @default(autoincrement())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        Int
+  product       Product       @relation(fields: [productId], references: [id])
+  productId     Int
+  quantity      Int
+  priceAtPurchase Decimal     @db.Decimal(10, 2)  // Price when purchased
+  status        PurchaseStatus @default(PENDING)
+  purchaseDate  DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  @@index([userId])
+  @@index([productId])
 }
